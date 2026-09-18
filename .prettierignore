@@ -1,0 +1,7 @@
+# Generated files
+node_modules
+dist
+stencil-dist
+loader
+www
+src/components.d.ts

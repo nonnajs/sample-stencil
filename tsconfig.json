@@ -1,0 +1,32 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "module": "esnext",
+        "jsx": "react",
+        "jsxFactory": "h",
+        "jsxFragmentFactory": "Fragment",
+        "baseUrl": ".",
+        "paths": {
+            "@services/*": ["src/services/*"]
+        },
+        // The Stencil compiler transpiles through the TS API itself (not just type-checks), so
+        // it needs actual emit - tsconfig.base.json's `noEmit: true` (correct for every other
+        // package here, which bundle via tsup/vite) silently makes Stencil discover zero source
+        // files. `tsc --noEmit` (this project's own `tsc` script) still works fine: the CLI flag
+        // overrides this value.
+        "noEmit": false
+    },
+    // `ts-node/register` (used by the `test` script) reads this same tsconfig - without this
+    // override it inherits `module: "esnext"` above (needed for Stencil's Rollup bundling) and
+    // emits real ESM `import`/`export` syntax instead of `require()`, which makes plain
+    // `node --test` reparse the compiled test file as ESM and then fail resolving
+    // `nonna-dependencies.generated` (Node's ESM resolver, unlike ts-node's CJS `require` patch,
+    // requires an explicit file extension).
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs"
+        }
+    },
+    "include": ["src/**/*", "test/**/*"]
+}
